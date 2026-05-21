@@ -1,0 +1,45 @@
+name: Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers on tags like v1.0.0, v2.1.0, etc.
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Draft Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Linter & Formatter Verification
+        run: |
+          npm run lint
+          npx prettier --check "src/**/*.{ts,css}" "popup.html"
+
+      - name: Run Build and Package
+        run: npm run pack
+
+      - name: Draft GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          prerelease: false
+          files: |
+            blurry-gchat-v*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

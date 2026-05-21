@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Blurry GChat Settings</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --green: #00ff88;
+        --green-glow: rgba(0, 255, 136, 0.12);
+        --red: #ff4444;
+        --red-glow: rgba(255, 68, 68, 0.12);
+        --amber: #ffaa00;
+        --bg: #0a0a0a;
+        --surface: #111;
+        --border: #1e1e1e;
+        --border-hi: #2e2e2e;
+        --text: #ddd;
+        --muted: #555;
+        --dim: #2a2a2a;
+      }
+
+      body {
+        width: 300px;
+        background: var(--bg);
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text);
+        overflow: hidden;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.06) 2px,
+          rgba(0, 0, 0, 0.06) 4px
+        );
+        pointer-events: none;
+        z-index: 999;
+      }
+
+      /* -- HEADER -- */
+      .header {
+        padding: 12px 14px 10px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .logo {
+        width: 26px;
+        height: 26px;
+        background: var(--green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        color: #000;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .hinfo {
+        margin-left: 8px;
+        flex: 1;
+      }
+      .htitle {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--green);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .hsub {
+        font-size: 8px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        margin-top: 1px;
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse 2s infinite;
+      }
+      .dot.off {
+        background: var(--dim);
+        animation: none;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.4;
+          transform: scale(0.8);
+        }
+      }
+
+      /* -- SECTION -- */
+      .section {
+        border-bottom: 1px solid var(--border);
+      }
+      .sec-label {
+        padding: 7px 14px 5px;
+        font-size: 8px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #666;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+      }
+
+      /* -- SEG ROW (3-state) -- */
+      .seg-row {
+        display: flex;
+        align-items: center;
+        padding: 9px 14px;
+        gap: 10px;
+        border-bottom: 1px solid var(--border);
+        animation: fadeIn 0.15s ease backwards;
+      }
+      .seg-row:last-child {
+        border-bottom: none;
+      }
+      .row-icon {
+        font-size: 13px;
+        width: 16px;
+        text-align: center;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+      .row-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .row-label {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+      .row-desc {
+        font-size: 8px;
+        color: var(--muted);
+        margin-top: 1px;
+        letter-spacing: 0.03em;
+      }
+
+      .seg-group {
+        display: flex;
+        border: 1px solid var(--border-hi);
+        flex-shrink: 0;
+      }
+      .seg {
+        font-family: inherit;
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        padding: 4px 7px;
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        border-right: 1px solid var(--border-hi);
+        transition:
+          background 0.1s,
+          color 0.1s;
+      }
+      .seg:last-child {
+        border-right: none;
+      }
+      .seg:hover {
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text);
+      }
+      .seg.active-blur {
+        background: var(--green-glow);
+        color: var(--green);
+      }
+      .seg.active-hide {
+        background: rgba(255, 170, 0, 0.1);
+        color: var(--amber);
+      }
+      .seg.active-off {
+        background: var(--red-glow);
+        color: var(--red);
+      }
+
+      /* -- TOGGLE ROW -- */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        padding: 9px 14px;
+        gap: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.1s;
+        animation: fadeIn 0.15s ease backwards;
+      }
+      .toggle-row:last-child {
+        border-bottom: none;
+      }
+      .toggle-row:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .toggle-row.active {
+        background: var(--green-glow);
+      }
+      .toggle-row.active .row-label {
+        color: var(--green);
+      }
+      .toggle-row.danger.active {
+        background: var(--red-glow);
+      }
+      .toggle-row.danger.active .row-label {
+        color: var(--red);
+      }
+
+      .switch {
+        position: relative;
+        width: 30px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        position: absolute;
+      }
+      .track {
+        position: absolute;
+        inset: 0;
+        background: var(--dim);
+        border: 1px solid var(--border-hi);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .track::after {
+        content: '';
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        left: 2px;
+        top: 2px;
+        background: var(--muted);
+        transition: all 0.15s;
+      }
+      input:checked + .track {
+        background: var(--green-glow);
+        border-color: var(--green);
+      }
+      input:checked + .track::after {
+        transform: translateX(14px);
+        background: var(--green);
+        box-shadow: 0 0 5px var(--green);
+      }
+      .danger-sw input:checked + .track {
+        background: var(--red-glow);
+        border-color: var(--red);
+      }
+      .danger-sw input:checked + .track::after {
+        background: var(--red);
+        box-shadow: 0 0 5px var(--red);
+      }
+
+      /* -- SLIDER ROW -- */
+      .slider-row {
+        padding: 9px 14px 11px;
+        border-bottom: 1px solid var(--border);
+      }
+      .slider-row:last-child {
+        border-bottom: none;
+      }
+      .slider-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 7px;
+      }
+      .slider-label {
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--text);
+        letter-spacing: 0.04em;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .slider-label span {
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .slider-val {
+        font-size: 9px;
+        color: var(--green);
+        font-weight: 700;
+      }
+      input[type='range'] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 2px;
+        background: var(--border-hi);
+        outline: none;
+        cursor: pointer;
+      }
+      input[type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 11px;
+        height: 11px;
+        background: var(--green);
+        box-shadow: 0 0 5px var(--green);
+        cursor: pointer;
+      }
+
+      /* -- HOTKEYS -- */
+      .hotkeys {
+        padding: 9px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .hk-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .hk-label {
+        font-size: 8px;
+        color: var(--muted);
+      }
+      .hk-keys {
+        display: flex;
+        gap: 2px;
+        align-items: center;
+      }
+      kbd {
+        font-family: inherit;
+        font-size: 7px;
+        background: var(--surface);
+        border: 1px solid var(--border-hi);
+        padding: 2px 4px;
+        color: var(--muted);
+      }
+      .sep {
+        font-size: 7px;
+        color: var(--dim);
+      }
+
+      /* -- FOOTER -- */
+      .footer {
+        padding: 7px 14px;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .fver {
+        font-size: 7px;
+        color: var(--dim);
+        letter-spacing: 0.1em;
+      }
+      .fstatus {
+        font-size: 8px;
+        color: var(--muted);
+        transition: color 0.2s;
+      }
+      .fstatus.saved {
+        color: var(--green);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateX(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .seg-row:nth-child(1) {
+        animation-delay: 0.02s;
+      }
+      .seg-row:nth-child(2) {
+        animation-delay: 0.04s;
+      }
+      .seg-row:nth-child(3) {
+        animation-delay: 0.06s;
+      }
+      .seg-row:nth-child(4) {
+        animation-delay: 0.08s;
+      }
+      .toggle-row:nth-child(1) {
+        animation-delay: 0.02s;
+      }
+      .toggle-row:nth-child(2) {
+        animation-delay: 0.04s;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo">&#x1F6E1;</div>
+      <div class="hinfo">
+        <div class="htitle">Blurry GChat</div>
+        <div class="hsub">operator panel v1.0</div>
+      </div>
+      <div class="dot" id="global-dot"></div>
+    </div>
+
+    <!-- SIDEBAR LIST -->
+    <div class="section">
+      <div class="sec-label">// sidebar list</div>
+
+      <div class="seg-row">
+        <span class="row-icon">&#x1F3F7;</span>
+        <div class="row-info">
+          <div class="row-label">Names</div>
+          <div class="row-desc">Conversation &amp; contact names</div>
+        </div>
+        <div class="seg-group" id="namesMode">
+          <button class="seg" data-val="off">OFF</button>
+          <button class="seg" data-val="blur">BLUR</button>
+          <button class="seg" data-val="hide">HIDE</button>
+        </div>
+      </div>
+
+      <div class="seg-row">
+        <span class="row-icon">&#x1F4CB;</span>
+        <div class="row-info">
+          <div class="row-label">Msg Preview</div>
+          <div class="row-desc">Last message preview text</div>
+        </div>
+        <div class="seg-group" id="previewMode">
+          <button class="seg" data-val="off">OFF</button>
+          <button class="seg" data-val="blur">BLUR</button>
+          <button class="seg" data-val="hide">HIDE</button>
+        </div>
+      </div>
+
+      <div class="seg-row">
+        <span class="row-icon">&#x1F464;</span>
+        <div class="row-info">
+          <div class="row-label">Avatars</div>
+          <div class="row-desc">Profile pictures &amp; initials</div>
+        </div>
+        <div class="seg-group" id="avatarsMode">
+          <button class="seg" data-val="off">OFF</button>
+          <button class="seg" data-val="blur">BLUR</button>
+          <button class="seg" data-val="hide">HIDE</button>
+        </div>
+      </div>
+
+      <label class="toggle-row" id="row-hoverReveal" for="hoverReveal">
+        <span class="row-icon">&#x1F441;</span>
+        <div class="row-info">
+          <div class="row-label">Hover Reveal</div>
+          <div class="row-desc">Reveal blurred content on hover</div>
+        </div>
+        <div class="switch">
+          <input type="checkbox" id="hoverReveal" />
+          <span class="track"></span>
+        </div>
+      </label>
+    </div>
+
+    <!-- CHAT CONTENT -->
+    <div class="section">
+      <div class="sec-label">// chat content</div>
+
+      <div class="seg-row">
+        <span class="row-icon">&#x1F3F7;</span>
+        <div class="row-info">
+          <div class="row-label">Names</div>
+          <div class="row-desc">Sender names in open chat</div>
+        </div>
+        <div class="seg-group" id="chatNamesMode">
+          <button class="seg" data-val="off">OFF</button>
+          <button class="seg" data-val="blur">BLUR</button>
+          <button class="seg" data-val="hide">HIDE</button>
+        </div>
+      </div>
+
+      <div class="seg-row">
+        <span class="row-icon">&#x1F4AC;</span>
+        <div class="row-info">
+          <div class="row-label">Messages</div>
+          <div class="row-desc">Message content in open chat</div>
+        </div>
+        <div class="seg-group" id="chatMode">
+          <button class="seg" data-val="off">OFF</button>
+          <button class="seg" data-val="blur">BLUR</button>
+          <button class="seg" data-val="hide">HIDE</button>
+        </div>
+      </div>
+
+      <div class="seg-row">
+        <span class="row-icon">&#x1F464;</span>
+        <div class="row-info">
+          <div class="row-label">Avatars</div>
+          <div class="row-desc">Photos in open chat</div>
+        </div>
+        <div class="seg-group" id="chatAvatarsMode">
+          <button class="seg" data-val="off">OFF</button>
+          <button class="seg" data-val="blur">BLUR</button>
+          <button class="seg" data-val="hide">HIDE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTENSITY -->
+    <div class="section">
+      <div class="sec-label">// intensity</div>
+      <div class="slider-row">
+        <div class="slider-header">
+          <div class="slider-label"><span>&#x1F4A7;</span> Blur Strength</div>
+          <div class="slider-val" id="blurVal">3px</div>
+        </div>
+        <input type="range" id="blurIntensity" min="1" max="14" step="1" value="3" />
+      </div>
+      <div class="slider-row">
+        <div class="slider-header">
+          <div class="slider-label"><span>&#x1F32B;</span> Opacity</div>
+          <div class="slider-val" id="opacityVal">55%</div>
+        </div>
+        <input type="range" id="opacity" min="10" max="90" step="5" value="55" />
+      </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="section">
+      <div class="sec-label">// layout</div>
+      <label class="toggle-row" id="row-sidebar" for="sidebar">
+        <span class="row-icon">&#x25C0;</span>
+        <div class="row-info">
+          <div class="row-label">Auto Collapse Sidebar</div>
+          <div class="row-desc">Shrink nav &middot; expand on hover</div>
+        </div>
+        <div class="switch">
+          <input type="checkbox" id="sidebar" />
+          <span class="track"></span>
+        </div>
+      </label>
+      <label class="toggle-row" id="row-focusMode" for="focusMode">
+        <span class="row-icon">&#x1F3AF;</span>
+        <div class="row-info">
+          <div class="row-label">Focus Mode</div>
+          <div class="row-desc">Dim sidebar &middot; reveal on hover</div>
+        </div>
+        <div class="switch">
+          <input type="checkbox" id="focusMode" />
+          <span class="track"></span>
+        </div>
+      </label>
+    </div>
+
+    <!-- DANGER -->
+    <div class="section">
+      <div class="sec-label">// danger</div>
+
+      <label class="toggle-row" id="row-autoShareProtect" for="autoShareProtect">
+        <span class="row-icon">&#x1F4E1;</span>
+        <div class="row-info">
+          <div class="row-label">Screen Share Guard</div>
+          <div class="row-desc">Auto full-blur when tab is captured</div>
+        </div>
+        <div class="switch">
+          <input type="checkbox" id="autoShareProtect" />
+          <span class="track"></span>
+        </div>
+      </label>
+
+      <label class="toggle-row danger" id="row-panic" for="panic">
+        <span class="row-icon">&#x1F631;</span>
+        <div class="row-info">
+          <div class="row-label">Panic Mode</div>
+          <div class="row-desc">Blur everything instantly &middot; &#x2318;&#x21E7;P</div>
+        </div>
+        <div class="switch danger-sw">
+          <input type="checkbox" id="panic" />
+          <span class="track"></span>
+        </div>
+      </label>
+    </div>
+
+    <!-- HOTKEYS -->
+    <div class="section">
+      <div class="sec-label">// hotkeys</div>
+      <div class="hotkeys">
+        <div class="hk-row">
+          <span class="hk-label">Cycle Names Mode</span>
+          <div class="hk-keys">
+            <kbd>&#x2318;</kbd><span class="sep">+</span><kbd>&#x21E7;</kbd
+            ><span class="sep">+</span><kbd>L</kbd>
+          </div>
+        </div>
+        <div class="hk-row">
+          <span class="hk-label">Panic Mode</span>
+          <div class="hk-keys">
+            <kbd>&#x2318;</kbd><span class="sep">+</span><kbd>&#x21E7;</kbd
+            ><span class="sep">+</span><kbd>P</kbd>
+          </div>
+        </div>
+        <div class="hk-row">
+          <span class="hk-label">Focus Mode</span>
+          <div class="hk-keys">
+            <kbd>&#x2318;</kbd><span class="sep">+</span><kbd>&#x21E7;</kbd
+            ><span class="sep">+</span><kbd>F</kbd>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span class="fver">v1.0.0</span>
+      <span class="fstatus" id="save-status">ready</span>
+    </div>
+
+    <script type="module" src="src/popup.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,239 @@
+:root {
+  --gcp-blur: 3px;
+  --gcp-opacity: 0.55;
+}
+
+/*
+ * Selectors confirmed from live Google Chat DOM (2026-05-21):
+ *
+ * Names:    .Vb5pDe (jsname="VYJYmb")
+ * Preview:  .rHUJK  — wraps ALL message preview content per listitem
+ * Avatars:  .k3H9bc (DM photo), .d8C7wd (Space photo), .SwwApf.qkl0pe (emoji)
+ *
+ * Hover reveal uses span[role="listitem"]:hover — confirmed in DOM.
+ */
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NAMES — .Vb5pDe
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.gcp-names-blur .Vb5pDe {
+  filter: blur(var(--gcp-blur));
+  opacity: var(--gcp-opacity);
+  transition:
+    filter 0.12s ease,
+    opacity 0.12s ease;
+}
+
+body.gcp-names-hide .Vb5pDe {
+  visibility: hidden !important;
+}
+
+/* Hover reveal — names */
+body.gcp-names-blur.gcp-hover-reveal span[role='listitem']:hover .Vb5pDe {
+  filter: blur(0) !important;
+  opacity: 1 !important;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CHAT VIEW — MESSAGE CONTENT
+   Primary:  [jsname="bgckF"]           ← stable Google component name
+   Fallback: .DTp27d                    ← current class (may change)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.gcp-chat-blur [jsname='bgckF'],
+body.gcp-chat-blur .DTp27d {
+  filter: blur(var(--gcp-blur));
+  opacity: var(--gcp-opacity);
+  transition:
+    filter 0.12s ease,
+    opacity 0.12s ease;
+}
+
+body.gcp-chat-hide [jsname='bgckF'],
+body.gcp-chat-hide .DTp27d {
+  visibility: hidden !important;
+}
+
+body.gcp-chat-blur.gcp-hover-reveal [jsname='bgckF']:hover,
+body.gcp-chat-blur.gcp-hover-reveal .DTp27d:hover {
+  filter: blur(0) !important;
+  opacity: 1 !important;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CHAT NAMES
+   Primary:  [data-gcp-el="name"]       ← Google tracking attr, very stable
+   Fallback: .njhDLd                    ← current class (may change)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.gcp-chat-names-blur [data-gcp-el='name'],
+body.gcp-chat-names-blur .njhDLd {
+  filter: blur(var(--gcp-blur));
+  opacity: var(--gcp-opacity);
+  transition:
+    filter 0.12s ease,
+    opacity 0.12s ease;
+}
+
+body.gcp-chat-names-hide [data-gcp-el='name'],
+body.gcp-chat-names-hide .njhDLd {
+  visibility: hidden !important;
+}
+
+body.gcp-chat-names-blur.gcp-hover-reveal [data-gcp-el='name']:hover,
+body.gcp-chat-names-blur.gcp-hover-reveal .njhDLd:hover {
+  filter: blur(0) !important;
+  opacity: 1 !important;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CHAT AVATARS
+   Primary:  img[data-gcp-el="avatar"]  ← Google tracking attr, very stable
+   Fallback: .hy2WD                     ← current class (may change)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.gcp-chat-avatars-blur img[data-gcp-el='avatar'],
+body.gcp-chat-avatars-blur .hy2WD {
+  filter: blur(var(--gcp-blur)) !important;
+  opacity: var(--gcp-opacity);
+  transition:
+    filter 0.12s ease,
+    opacity 0.12s ease;
+}
+
+body.gcp-chat-avatars-hide img[data-gcp-el='avatar'],
+body.gcp-chat-avatars-hide .hy2WD {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MESSAGE PREVIEWS — .rHUJK
+   Blurs the entire preview block:
+   thread labels + sender + message text
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.gcp-preview-blur .rHUJK {
+  filter: blur(var(--gcp-blur));
+  opacity: var(--gcp-opacity);
+  transition:
+    filter 0.12s ease,
+    opacity 0.12s ease;
+}
+
+body.gcp-preview-hide .rHUJK {
+  visibility: hidden !important;
+}
+
+/* Hover reveal — previews */
+body.gcp-preview-blur.gcp-hover-reveal span[role='listitem']:hover .rHUJK {
+  filter: blur(0) !important;
+  opacity: 1 !important;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   AVATARS
+   .k3H9bc  → DM person photo container
+   .d8C7wd  → Space/group photo container
+   .SwwApf.qkl0pe → Space emoji avatar
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.gcp-avatars-blur .k3H9bc,
+body.gcp-avatars-blur .d8C7wd,
+body.gcp-avatars-blur .SwwApf.qkl0pe {
+  filter: blur(var(--gcp-blur)) !important;
+  opacity: var(--gcp-opacity);
+  transition:
+    filter 0.12s ease,
+    opacity 0.12s ease;
+}
+
+body.gcp-avatars-hide .k3H9bc,
+body.gcp-avatars-hide .d8C7wd,
+body.gcp-avatars-hide .SwwApf.qkl0pe {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+/* Hover reveal — avatars */
+body.gcp-avatars-blur.gcp-hover-reveal span[role='listitem']:hover .k3H9bc,
+body.gcp-avatars-blur.gcp-hover-reveal span[role='listitem']:hover .d8C7wd,
+body.gcp-avatars-blur.gcp-hover-reveal span[role='listitem']:hover .SwwApf.qkl0pe {
+  filter: blur(0) !important;
+  opacity: 1 !important;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SIDEBAR AUTO COLLAPSE
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.gcp-sidebar-collapse nav div[role='list'],
+body.gcp-sidebar-collapse [data-view-type='0'] div[role='list'] {
+  width: 72px;
+  overflow: hidden;
+  transition: width 0.18s ease;
+}
+
+body.gcp-sidebar-collapse nav div[role='list']:hover,
+body.gcp-sidebar-collapse [data-view-type='0'] div[role='list']:hover {
+  width: 340px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   FOCUS MODE
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.gcp-focus [role='navigation'],
+body.gcp-focus nav {
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+}
+
+body.gcp-focus [role='navigation']:hover,
+body.gcp-focus nav:hover {
+  opacity: 1;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PANIC MODE
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+body.gcp-panic * {
+  filter: blur(18px) !important;
+  transition: filter 0.1s ease;
+}
+
+body.gcp-panic:hover * {
+  filter: blur(18px) !important;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   FLOATING STATUS INDICATOR
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+#gcp-indicator {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 999999;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #00ff88;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+#gcp-indicator.panic {
+  color: #ff4444;
+  border-color: rgba(255, 68, 68, 0.25);
+}
+
+#gcp-indicator.show {
+  opacity: 1;
+}
