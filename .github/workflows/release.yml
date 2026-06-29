@@ -40,6 +40,6 @@ jobs:
           draft: true
           prerelease: false
           files: |
-            blurry-gchat-v*.zip
+            shroudly-v*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
