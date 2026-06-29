@@ -7,17 +7,21 @@
  * Selectors confirmed from live Google Chat DOM (2026-05-21):
  *
  * Names:    .Vb5pDe (jsname="VYJYmb")
- * Preview:  .rHUJK  — wraps ALL message preview content per listitem
+ * Preview:  .rHUJK  - wraps ALL message preview content per listitem
  * Avatars:  .k3H9bc (DM photo), .d8C7wd (Space photo), .SwwApf.qkl0pe (emoji)
  *
- * Hover reveal uses span[role="listitem"]:hover — confirmed in DOM.
+ * Each Google selector has a [data-gcp-el] fallback tagged by content.ts.
+ * The fallback activates automatically if Google renames their classes.
+ * Hover reveal uses span[role="listitem"]:hover - confirmed in DOM.
  */
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   NAMES — .Vb5pDe
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ---
+   NAMES - .Vb5pDe
+   Fallback: [data-gcp-el="name"] tagged by extension on sidebar list items
+   --- */
 
-body.gcp-names-blur .Vb5pDe {
+body.gcp-names-blur .Vb5pDe,
+body.gcp-names-blur [data-gcp-el='name'] {
   filter: blur(var(--gcp-blur));
   opacity: var(--gcp-opacity);
   transition:
@@ -25,21 +29,23 @@ body.gcp-names-blur .Vb5pDe {
     opacity 0.12s ease;
 }
 
-body.gcp-names-hide .Vb5pDe {
+body.gcp-names-hide .Vb5pDe,
+body.gcp-names-hide [data-gcp-el='name'] {
   visibility: hidden !important;
 }
 
-/* Hover reveal — names */
-body.gcp-names-blur.gcp-hover-reveal span[role='listitem']:hover .Vb5pDe {
+/* Hover reveal - names */
+body.gcp-names-blur.gcp-hover-reveal span[role='listitem']:hover .Vb5pDe,
+body.gcp-names-blur.gcp-hover-reveal span[role='listitem']:hover [data-gcp-el='name'] {
   filter: blur(0) !important;
   opacity: 1 !important;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   CHAT VIEW — MESSAGE CONTENT
-   Primary:  [jsname="bgckF"]           ← stable Google component name
-   Fallback: .DTp27d                    ← current class (may change)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ---
+   CHAT VIEW - MESSAGE CONTENT
+   Primary:  [jsname="bgckF"]  - stable Google component name
+   Fallback: .DTp27d           - current class (may change)
+   --- */
 
 body.gcp-chat-blur [jsname='bgckF'],
 body.gcp-chat-blur .DTp27d {
@@ -61,13 +67,11 @@ body.gcp-chat-blur.gcp-hover-reveal .DTp27d:hover {
   opacity: 1 !important;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/* ---
    CHAT NAMES
-   Primary:  [data-gcp-el="name"]       ← Google tracking attr, very stable
-   Fallback: .njhDLd                    ← current class (may change)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+   .njhDLd - sender name in open chat (may change with Google updates)
+   --- */
 
-body.gcp-chat-names-blur [data-gcp-el='name'],
 body.gcp-chat-names-blur .njhDLd {
   filter: blur(var(--gcp-blur));
   opacity: var(--gcp-opacity);
@@ -76,24 +80,20 @@ body.gcp-chat-names-blur .njhDLd {
     opacity 0.12s ease;
 }
 
-body.gcp-chat-names-hide [data-gcp-el='name'],
 body.gcp-chat-names-hide .njhDLd {
   visibility: hidden !important;
 }
 
-body.gcp-chat-names-blur.gcp-hover-reveal [data-gcp-el='name']:hover,
 body.gcp-chat-names-blur.gcp-hover-reveal .njhDLd:hover {
   filter: blur(0) !important;
   opacity: 1 !important;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/* ---
    CHAT AVATARS
-   Primary:  img[data-gcp-el="avatar"]  ← Google tracking attr, very stable
-   Fallback: .hy2WD                     ← current class (may change)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+   .hy2WD - avatar in open chat (may change with Google updates)
+   --- */
 
-body.gcp-chat-avatars-blur img[data-gcp-el='avatar'],
 body.gcp-chat-avatars-blur .hy2WD {
   filter: blur(var(--gcp-blur)) !important;
   opacity: var(--gcp-opacity);
@@ -102,19 +102,19 @@ body.gcp-chat-avatars-blur .hy2WD {
     opacity 0.12s ease;
 }
 
-body.gcp-chat-avatars-hide img[data-gcp-el='avatar'],
 body.gcp-chat-avatars-hide .hy2WD {
   opacity: 0 !important;
   pointer-events: none;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   MESSAGE PREVIEWS — .rHUJK
-   Blurs the entire preview block:
-   thread labels + sender + message text
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ---
+   MESSAGE PREVIEWS - .rHUJK
+   Fallback: [data-gcp-el="preview"] tagged by extension on sidebar list items
+   Blurs the entire preview block: thread labels + sender + message text
+   --- */
 
-body.gcp-preview-blur .rHUJK {
+body.gcp-preview-blur .rHUJK,
+body.gcp-preview-blur [data-gcp-el='preview'] {
   filter: blur(var(--gcp-blur));
   opacity: var(--gcp-opacity);
   transition:
@@ -122,26 +122,30 @@ body.gcp-preview-blur .rHUJK {
     opacity 0.12s ease;
 }
 
-body.gcp-preview-hide .rHUJK {
+body.gcp-preview-hide .rHUJK,
+body.gcp-preview-hide [data-gcp-el='preview'] {
   visibility: hidden !important;
 }
 
-/* Hover reveal — previews */
-body.gcp-preview-blur.gcp-hover-reveal span[role='listitem']:hover .rHUJK {
+/* Hover reveal - previews */
+body.gcp-preview-blur.gcp-hover-reveal span[role='listitem']:hover .rHUJK,
+body.gcp-preview-blur.gcp-hover-reveal span[role='listitem']:hover [data-gcp-el='preview'] {
   filter: blur(0) !important;
   opacity: 1 !important;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/* ---
    AVATARS
-   .k3H9bc  → DM person photo container
-   .d8C7wd  → Space/group photo container
-   .SwwApf.qkl0pe → Space emoji avatar
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+   .k3H9bc        - DM person photo container
+   .d8C7wd        - Space/group photo container
+   .SwwApf.qkl0pe - Space emoji avatar
+   Fallback: [data-gcp-el="avatar"] tagged by extension on sidebar list items
+   --- */
 
 body.gcp-avatars-blur .k3H9bc,
 body.gcp-avatars-blur .d8C7wd,
-body.gcp-avatars-blur .SwwApf.qkl0pe {
+body.gcp-avatars-blur .SwwApf.qkl0pe,
+body.gcp-avatars-blur [data-gcp-el='avatar'] {
   filter: blur(var(--gcp-blur)) !important;
   opacity: var(--gcp-opacity);
   transition:
@@ -151,66 +155,41 @@ body.gcp-avatars-blur .SwwApf.qkl0pe {
 
 body.gcp-avatars-hide .k3H9bc,
 body.gcp-avatars-hide .d8C7wd,
-body.gcp-avatars-hide .SwwApf.qkl0pe {
+body.gcp-avatars-hide .SwwApf.qkl0pe,
+body.gcp-avatars-hide [data-gcp-el='avatar'] {
   opacity: 0 !important;
   pointer-events: none;
 }
 
-/* Hover reveal — avatars */
+/* Hover reveal - avatars */
 body.gcp-avatars-blur.gcp-hover-reveal span[role='listitem']:hover .k3H9bc,
 body.gcp-avatars-blur.gcp-hover-reveal span[role='listitem']:hover .d8C7wd,
-body.gcp-avatars-blur.gcp-hover-reveal span[role='listitem']:hover .SwwApf.qkl0pe {
+body.gcp-avatars-blur.gcp-hover-reveal span[role='listitem']:hover .SwwApf.qkl0pe,
+body.gcp-avatars-blur.gcp-hover-reveal span[role='listitem']:hover [data-gcp-el='avatar'] {
   filter: blur(0) !important;
   opacity: 1 !important;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   SIDEBAR AUTO COLLAPSE
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-body.gcp-sidebar-collapse nav div[role='list'],
-body.gcp-sidebar-collapse [data-view-type='0'] div[role='list'] {
-  width: 72px;
-  overflow: hidden;
-  transition: width 0.18s ease;
-}
-
-body.gcp-sidebar-collapse nav div[role='list']:hover,
-body.gcp-sidebar-collapse [data-view-type='0'] div[role='list']:hover {
-  width: 340px;
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   FOCUS MODE
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-body.gcp-focus [role='navigation'],
-body.gcp-focus nav {
-  opacity: 0.3;
-  transition: opacity 0.2s ease;
-}
-
-body.gcp-focus [role='navigation']:hover,
-body.gcp-focus nav:hover {
-  opacity: 1;
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/* ---
    PANIC MODE
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+   Apply blur only to direct children of body to avoid creating a GPU stacking
+   context for every element in the DOM (which body.gcp-panic * would do).
+   Filter on a parent visually blurs all its descendants, so > * is sufficient.
+   --- */
 
-body.gcp-panic * {
+body.gcp-panic > * {
   filter: blur(18px) !important;
   transition: filter 0.1s ease;
 }
 
-body.gcp-panic:hover * {
-  filter: blur(18px) !important;
+/* Exclude the status indicator so it stays readable during panic */
+body.gcp-panic #gcp-indicator {
+  filter: none !important;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/* ---
    FLOATING STATUS INDICATOR
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+   --- */
 
 #gcp-indicator {
   position: fixed;
@@ -236,4 +215,155 @@ body.gcp-panic:hover * {
 
 #gcp-indicator.show {
   opacity: 1;
+}
+
+/* ---
+   UNFLOW IN-PAGE DECORATION (hover toolbar / alias / badges)
+   All glyphs live here as CSS `content` so the content-script JS stays pure
+   ASCII (the build escapes JS, not CSS).
+   --- */
+
+.gcp-item {
+  position: relative;
+}
+
+.gcp-tb {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: rgba(10, 10, 10, 0.92);
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+  z-index: 5;
+}
+.gcp-item:hover .gcp-tb {
+  opacity: 1;
+  pointer-events: auto;
+}
+.gcp-tb-btn {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  background: transparent;
+  color: #d7dadf;
+  cursor: pointer;
+  line-height: 1;
+  transition:
+    color 0.1s,
+    background 0.1s,
+    border-color 0.1s;
+}
+.gcp-tb-btn:hover {
+  background: rgba(0, 255, 136, 0.18);
+  color: #fff;
+  border-color: rgba(0, 255, 136, 0.55);
+}
+.gcp-tb-btn.gcp-active {
+  background: rgba(0, 255, 136, 0.18);
+  color: #00ff88;
+  border-color: #00ff88;
+}
+
+.gcp-edit {
+  /* Overlay the row, vertically centered, so editing happens where the name is
+     (not floating in the top-right corner). */
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 7;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #e8eaed;
+  background: #0a0a0a;
+  border: 1px solid #00ff88;
+  border-radius: 6px;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.18);
+}
+
+.gcp-badges {
+  /* Overlay inside the row's bounds: appending a flow element would add height
+     and get clipped by Google's fixed-height list rows. */
+  position: absolute;
+  right: 6px;
+  bottom: 3px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 3px;
+  max-width: 70%;
+  z-index: 4;
+  pointer-events: none;
+}
+.gcp-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  padding: 0 5px;
+  border-radius: 8px;
+  background: rgba(0, 255, 136, 0.14);
+  color: #00ff88;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+.gcp-badge-pin {
+  background: rgba(255, 170, 0, 0.16);
+  color: #ffaa00;
+  border-color: rgba(255, 170, 0, 0.35);
+}
+/* Tag chips are clickable to remove; the rest of the badge row stays inert. */
+.gcp-badge-tag {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.gcp-badge-tag:hover {
+  filter: brightness(0.92);
+}
+.gcp-badge-tag:hover::after {
+  content: '\00d7';
+  margin-left: 4px;
+  font-weight: 700;
+}
+
+/* Alias chip shown before the conversation title (the title itself is left
+   untouched). Width-capped with an ellipsis so a long alias never overflows.
+   Clickable to edit/clear the alias. */
+.gcp-alias-chip {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  margin-right: 6px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.5;
+  /* Solid high-contrast fill (a translucent tint washes out on Google's white
+     list background); dark text on bright green reads clearly on any theme. */
+  background: #00e676;
+  color: #06251a;
+  border: 1px solid #00b85a;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
 }
