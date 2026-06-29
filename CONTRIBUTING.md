@@ -1,4 +1,4 @@
-# 🤝 Contributing to Blurry GChat
+# 🤝 Contributing to Shroudly
 
 We'd love for you to contribute to this extension and make it even better for the community! Here is a guide on how you can get started.
 

@@ -1,8 +1,8 @@
-# 🔒 Privacy Policy for Blurry GChat
+# 🔒 Privacy Policy for Shroudly
 
 Last Updated: May 21, 2026
 
-**Blurry GChat** ("the Extension") is a browser extension developed by **ShaneDev101**. Your privacy is of paramount importance to us, and the Extension is designed from the ground up to protect your data.
+**Shroudly** ("the Extension") is a browser extension developed by **shanedev101**. Your privacy is of paramount importance to us, and the Extension is designed from the ground up to protect your data.
 
 ---
 
@@ -32,7 +32,7 @@ The Extension **does not make any network requests** to external servers. It ope
 
 ## 4. Open Source Transparency
 
-To guarantee security and verify this privacy statement, the entire codebase of Blurry GChat is open-source and available for audit under the MIT License.
+To guarantee security and verify this privacy statement, the entire codebase of Shroudly is open-source and available for audit under the MIT License.
 
 ---
 

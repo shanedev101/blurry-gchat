@@ -1,4 +1,4 @@
-# 🚀 Blurry GChat - Chrome Web Store Submission Kit
+# 🚀 Shroudly - Chrome Web Store Submission Kit
 
 This kit contains all the exact copy, descriptions, and permission justifications you need to copy-paste directly into the [Chrome Web Store Developer Console](https://chrome.google.com/webstore/devconsole).
 
@@ -6,21 +6,26 @@ This kit contains all the exact copy, descriptions, and permission justification
 
 ## 📋 1. Basic Metadata
 
-| Field                 | Copy to Paste                                                         |
-| :-------------------- | :-------------------------------------------------------------------- |
-| **Product Name**      | `Blurry GChat`                                                        |
-| **Short Description** | `Privacy shield for GChat — blur names, previews, avatars, and more.` |
-| **Category**          | `Productivity` (or `Developer Tools` / `Social & Communication`)      |
-| **Official Homepage** | _(Your GitHub repository link)_                                       |
+| Field                 | Copy to Paste                                                                            |
+| :-------------------- | :--------------------------------------------------------------------------------------- |
+| **Product Name**      | `Shroudly`                                                                               |
+| **Short Description** | `Blur & hide for Google Chat - protect names, previews & avatars from shoulder-surfing.` |
+| **Category**          | `Productivity` (or `Developer Tools` / `Social & Communication`)                         |
+| **Official Homepage** | _(Your GitHub repository link)_                                                          |
+
+> **Trademark note:** In the public store listing, reference the product as
+> **"for Google Chat™"** (with the ™). "Shroudly" is your own brand; do not put
+> "Google", "GChat", or any Google mark inside the product name itself. See
+> [studio/RENAME_RESEARCH.md](studio/RENAME_RESEARCH.md).
 
 ---
 
 ## 📝 2. Detailed Store Description (English - Recommended for Global Reach)
 
 ```text
-Shield your screen space and conversations dynamically! Blurry GChat is a premium, open-source privacy extension designed to protect sensitive workspace details on Google Chat from shoulder-surfing, accidental screen-sharing leaks, and video recordings.
+Shield your screen space and conversations dynamically! Shroudly is a premium, open-source privacy extension designed to protect sensitive workspace details on Google Chat from shoulder-surfing, accidental screen-sharing leaks, and video recordings.
 
-Whether you are working in a bustling coffee shop, sharing your window on a Zoom call, or recording a software demo, Blurry GChat gives you granular, independent control over what is visible.
+Whether you are working in a bustling coffee shop, sharing your window on a Zoom call, or recording a software demo, Shroudly gives you granular, independent control over what is visible.
 
 ✨ KEY FEATURES:
 
@@ -63,7 +68,7 @@ When filling out the **Privacy Practices** tab in the console, copy and paste th
 
 | Field                        | Copy to Paste                                                                                                                                 |
 | :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Single Purpose**           | `To provide granular privacy controls including blurring and hiding sensitive elements like names and messages on GChat.`                     |
+| **Single Purpose**           | `To provide granular privacy controls including blurring and hiding sensitive elements like names and messages on Google Chat.`               |
 | **Permission: `storage`**    | `Required to save, load, and persist user preferences for privacy modes, blur intensity, and custom layout configurations locally.`           |
 | **Permission: `tabCapture`** | `Required to automatically detect active browser tab capturing and dynamically apply maximum blur protection during screen-sharing sessions.` |
 
@@ -82,4 +87,4 @@ Ensure your graphic design assets meet these exact requirements before uploading
    - _Tip: Take a screenshot of Google Chat with names and messages beautifully blurred to demonstrate the extension._
 3. **Promotional Tile (Optional but recommended for premium store feel)**:
    - Size: `440x280` pixels.
-   - _Tip: Design a neat card showing the Blurry GChat shield logo with dark modern glassmorphism styling._
+   - _Tip: Design a neat card showing the Shroudly shield logo with dark modern glassmorphism styling._
