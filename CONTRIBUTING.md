@@ -49,3 +49,10 @@ To ensure a smooth, secure, and performant extension, please adhere to these con
 4. Our maintainers will review your PR and coordinate with you to merge it.
 
 Thank you for contributing! Your help keeps our privacy tools stable and secure!
+
+---
+
+## 🚢 Cutting a Release
+
+If you're a maintainer preparing a new version, see [RELEASING.md](RELEASING.md)
+for the full branch → PR → tag → CI flow.

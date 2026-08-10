@@ -96,6 +96,10 @@ This produces a `shroudly-v<version>.zip` archive (version read from `package.js
 
 ## 🚀 Chrome Web Store Publishing Guide
 
+> For the full maintainer release process (branch, PR, tag, CI build), see
+> [RELEASING.md](RELEASING.md). The steps below cover the Chrome Web Store
+> side only.
+
 Follow these steps to publish this extension to the Google Chrome Web Store:
 
 ### 1. Developer Console Registration
