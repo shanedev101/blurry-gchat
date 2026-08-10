@@ -44,9 +44,14 @@ Total peace of mind! The extension automatically applies maximum blur protection
 😱 Panic Mode (Instant Blur)
 Trigger a full-screen obfuscation instantly with a rapid hotkey combination: [Cmd/Ctrl] + [Shift] + [P] when someone unexpectedly approaches your desk.
 
-📱 Clean Layout Enhancements
-- Auto-Collapse Sidebar: Shrinks the chat navigation into a ultra-minimal status strip that auto-expands on hover.
-- Focus Mode: Dims navigation lists to draw all your focus exclusively onto the active chat thread.
+🧵 Thread Manager
+Pin, tag, and alias any conversation right from the sidebar. Find it again instantly with search across pins, tags, and aliases - and reorder or collapse the panel's sections to match your workflow.
+
+💾 Backup & Restore
+Export your full configuration (privacy settings, panel layout, and thread data) to a JSON file, and import it on another machine in one click.
+
+🔌 Master Switch
+One toggle instantly disables every privacy effect (confirmation required) without losing your saved configuration.
 
 🔒 100% PRIVATE & SECURITY FIRST
 - Runs entirely locally inside your browser sandbox.
@@ -57,7 +62,6 @@ Trigger a full-screen obfuscation instantly with a rapid hotkey combination: [Cm
 ⌨️ KEYBOARD SHORTCUTS REFERENCE:
 - Cmd/Ctrl + Shift + L: Cycle Names Privacy states (Off -> Blur -> Hide)
 - Cmd/Ctrl + Shift + P: Toggle Panic Mode (Full screen blur)
-- Cmd/Ctrl + Shift + F: Toggle Focus Mode
 ```
 
 ---
@@ -68,9 +72,11 @@ When filling out the **Privacy Practices** tab in the console, copy and paste th
 
 | Field                        | Copy to Paste                                                                                                                                 |
 | :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Single Purpose**           | `To provide granular privacy controls including blurring and hiding sensitive elements like names and messages on Google Chat.`               |
-| **Permission: `storage`**    | `Required to save, load, and persist user preferences for privacy modes, blur intensity, and custom layout configurations locally.`           |
-| **Permission: `tabCapture`** | `Required to automatically detect active browser tab capturing and dynamically apply maximum blur protection during screen-sharing sessions.` |
+| **Single Purpose**             | `To provide granular privacy controls including blurring and hiding sensitive elements like names and messages on Google Chat.`               |
+| **Permission: `storage`**      | `Required to save, load, and persist user preferences for privacy modes, blur intensity, and custom layout configurations locally.`           |
+| **Permission: `tabCapture`**   | `Required to automatically detect active browser tab capturing and dynamically apply maximum blur protection during screen-sharing sessions.` |
+| **Permission: `sidePanel`**    | `Required to render the extension's privacy controls in Chrome's native side panel alongside Google Chat.`                                    |
+| **Host permission: `https://chat.google.com/*`** | `Required so the extension can read and apply blur/hide styling to the Google Chat page DOM; the extension does not run on any other site.` |
 
 ---
 

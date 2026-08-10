@@ -1,6 +1,6 @@
 {
   "name": "shroudly",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Blur & hide for Google Chat - protect names, previews & avatars from shoulder-surfing.",
   "type": "module",
   "scripts": {

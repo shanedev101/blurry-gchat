@@ -112,9 +112,6 @@ A hotkey mutates the in-memory settings and calls `persist()`, which writes
 `gcp-settings` and re-applies. The write triggers `onChanged`, which updates the
 side panel UI — keeping page and panel in sync.
 
-> Drift: `Cmd/Ctrl+Shift+F` (Focus Mode) is advertised but **not implemented**.
-> See [ARCHITECTURE.md → Known drift](ARCHITECTURE.md#known-drift-docs-vs-code).
-
 ## 7. Status indicator
 
 A floating `#gcp-indicator` bottom-right on the page, created lazily. It shows the

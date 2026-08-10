@@ -200,18 +200,25 @@ updates its controls. See [STORAGE.md](STORAGE.md) for the full contract.
 
 ## 8. Known drift (docs vs. code)
 
-The marketing docs describe features that are **not present** in the current
-source. Track these so they are either built or removed from the copy:
+As of 2026-08-11 there is no known drift: `README.md` and `STORE_SUBMISSION.md`
+were audited against the shipped code and corrected.
 
-| Advertised in `README.md` / `STORE_SUBMISSION.md` | Status in code                                                      |
-| :------------------------------------------------ | :------------------------------------------------------------------ |
-| Focus Mode (`Cmd/Ctrl+Shift+F`)                   | **Not implemented.** No `F` hotkey, no focus-mode body class.       |
-| Auto-Collapse Sidebar                             | **Not implemented.** No related logic in `content.ts`/`styles.css`. |
-| Hotkey list mentioning `+F`                       | Only `+P` (panic) and `+L` (cycle names) exist.                     |
+For reference, previously fixed drift:
+
+- `README.md` / `STORE_SUBMISSION.md` advertised **Focus Mode**
+  (`Cmd/Ctrl+Shift+F`) and **Auto-Collapse Sidebar** — neither was ever
+  implemented (no `F` hotkey, no related body class or `content.ts` logic).
+  Both were removed from the copy; the docs now also list the real,
+  previously-undocumented features (Master Switch, Thread Manager, Backup &
+  Restore, collapsible/draggable sections) and permission justifications for
+  `sidePanel` and the `chat.google.com` host permission.
+- `popup.html` footer showed `v1.0.0` while `manifest.json` / `package.json`
+  were at `1.0.1` — synced to `1.0.1`.
+- `README.md` had a stray Vietnamese fragment (`phims tắt`) — fixed to
+  "keyboard shortcuts".
 
 Implemented hotkeys today: `Cmd/Ctrl+Shift+P` (toggle panic) and
 `Cmd/Ctrl+Shift+L` (cycle names OFF→BLUR→HIDE), both handled in `content.ts`.
 
-Other minor drift: `popup.html` footer shows `v1.0.0` while `manifest.json` /
-`package.json` are at `1.0.1`; `README.md`/`STORE_SUBMISSION.md` contain a couple
-of stray Vietnamese words (`phims tắt`).
+If you add a user-facing feature, update `README.md` and `STORE_SUBMISSION.md`
+in the same change so this section doesn't need to be reopened.
