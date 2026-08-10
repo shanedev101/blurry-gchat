@@ -47,6 +47,9 @@ git checkout -b release/X.Y.Z
   git push -u origin release/X.Y.Z
   gh pr create --base main --head release/X.Y.Z --title "Release X.Y.Z: <summary>"
   ```
+- `.github/workflows/ci.yml` runs lint, formatting, tests, and build
+  automatically on the PR (`pull_request` targeting `main`) - wait for it
+  to go green, it's a real status check, not just a manual read-through.
 - Get it reviewed and merged (regular merge, not squash - keep the
   individual commits, they're already meaningful).
 
