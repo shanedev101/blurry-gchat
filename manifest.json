@@ -1,17 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "Blurry GChat",
-  "version": "1.0.0",
-  "description": "Privacy shield for GChat — blur names, previews, avatars, and more.",
+  "name": "Shroudly",
+  "version": "1.1.0",
+  "description": "Blur & hide for Google Chat - protect names, previews & avatars from shoulder-surfing.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["storage", "tabCapture"],
+  "permissions": ["storage", "tabCapture", "sidePanel"],
   "host_permissions": ["https://chat.google.com/*"],
+  "side_panel": {
+    "default_path": "popup.html"
+  },
   "action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
@@ -27,14 +29,5 @@
       "css": ["styles.css"],
       "js": ["content.js"]
     }
-  ],
-  "commands": {
-    "toggle-privacy": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+L",
-        "mac": "Command+Shift+L"
-      },
-      "description": "Cycle names privacy mode"
-    }
-  }
+  ]
 }

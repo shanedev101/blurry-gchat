@@ -39,7 +39,12 @@ jobs:
         with:
           draft: true
           prerelease: false
+          # npm run pack names the zip after package.json's "name" field
+          # (see scripts/pack.js), which has changed before (blurry-gchat ->
+          # shroudly) and could change again. Match any zip in the workspace
+          # root instead of hard-coding the current package name, so a
+          # future rename can't silently break asset upload again.
           files: |
-            blurry-gchat-v*.zip
+            *.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

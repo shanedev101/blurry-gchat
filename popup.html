@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Blurry GChat Settings</title>
+    <title>Shroudly Settings</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
 
@@ -28,11 +28,12 @@
       }
 
       body {
-        width: 300px;
+        width: 100%;
+        min-width: 280px;
         background: var(--bg);
         font-family: 'JetBrains Mono', monospace;
         color: var(--text);
-        overflow: hidden;
+        overflow-x: hidden;
       }
 
       body::before {
@@ -59,17 +60,14 @@
         align-items: center;
         justify-content: space-between;
       }
+      /* Use the real extension icon so the panel header matches the toolbar/store icon. */
       .logo {
         width: 26px;
         height: 26px;
-        background: var(--green);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        color: #000;
-        font-weight: 700;
+        display: block;
+        object-fit: contain;
         flex-shrink: 0;
+        border-radius: 5px;
       }
       .hinfo {
         margin-left: 8px;
@@ -99,6 +97,100 @@
         background: var(--dim);
         animation: none;
       }
+
+      /* -- MASTER ON/OFF SWITCH -- */
+      .master {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+      .master-label {
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        color: var(--green);
+      }
+      body.panel-disabled .master-label {
+        color: var(--muted);
+      }
+      /* Dim and lock the controls while the extension is off (the switch stays live). */
+      body.panel-disabled #panel-sections {
+        opacity: 0.4;
+        pointer-events: none;
+        filter: grayscale(0.4);
+      }
+
+      /* -- CONFIRM MODAL -- */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background: rgba(0, 0, 0, 0.62);
+      }
+      .modal-overlay[hidden] {
+        display: none;
+      }
+      .modal {
+        width: 100%;
+        max-width: 260px;
+        background: var(--surface);
+        border: 1px solid var(--border-hi);
+        border-radius: 10px;
+        padding: 14px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      }
+      .modal-title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: var(--red);
+        margin-bottom: 7px;
+      }
+      .modal-text {
+        font-size: 9px;
+        line-height: 1.5;
+        color: var(--text);
+        margin-bottom: 12px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+      .modal-btn {
+        font-family: inherit;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        padding: 6px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        background: transparent;
+        border: 1px solid var(--border-hi);
+        color: var(--text);
+        transition:
+          background 0.1s,
+          border-color 0.1s;
+      }
+      .modal-cancel:hover {
+        border-color: var(--muted);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .modal-confirm {
+        color: var(--red);
+        border-color: rgba(255, 68, 68, 0.4);
+        background: var(--red-glow);
+      }
+      .modal-confirm:hover {
+        border-color: var(--red);
+        background: rgba(255, 68, 68, 0.18);
+      }
       @keyframes pulse {
         0%,
         100% {
@@ -116,6 +208,11 @@
         border-bottom: 1px solid var(--border);
       }
       .sec-label {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
         padding: 7px 14px 5px;
         font-size: 8px;
         letter-spacing: 0.18em;
@@ -132,7 +229,6 @@
         padding: 9px 14px;
         gap: 10px;
         border-bottom: 1px solid var(--border);
-        animation: fadeIn 0.15s ease backwards;
       }
       .seg-row:last-child {
         border-bottom: none;
@@ -209,7 +305,6 @@
         cursor: pointer;
         border-bottom: 1px solid var(--border);
         transition: background 0.1s;
-        animation: fadeIn 0.15s ease backwards;
       }
       .toggle-row:last-child {
         border-bottom: none;
@@ -385,253 +480,742 @@
         color: var(--green);
       }
 
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateX(-4px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
+      /* -- PANEL SECTION (collapsible / draggable wrapper) -- */
+      .panel-section {
+        border-bottom: 1px solid var(--border);
+      }
+      .psec-head {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        user-select: none;
+      }
+      .psec-head:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .psec-drag {
+        color: var(--muted);
+        font-size: 11px;
+        cursor: grab;
+        line-height: 1;
+      }
+      .psec-head:active .psec-drag {
+        cursor: grabbing;
+      }
+      .psec-title {
+        flex: 1;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--green);
+      }
+      .psec-chevron {
+        color: var(--muted);
+        font-size: 9px;
+        transition: transform 0.15s;
+      }
+      .panel-section.collapsed .psec-chevron {
+        transform: rotate(-90deg);
+      }
+      .panel-section.collapsed .psec-body {
+        display: none;
+      }
+      .panel-section.dragging {
+        opacity: 0.45;
+      }
+      .panel-section.drag-over {
+        box-shadow:
+          inset 0 2px 0 var(--green),
+          0 0 8px var(--green-glow);
       }
 
-      .seg-row:nth-child(1) {
-        animation-delay: 0.02s;
+      /* -- UNFLOW PLACEHOLDER (real markup lands in Phase 8) -- */
+      .psec-empty {
+        padding: 12px 14px;
+        font-size: 8px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
       }
-      .seg-row:nth-child(2) {
-        animation-delay: 0.04s;
+
+      /* -- BACKUP -- */
+      .backup {
+        padding: 10px 12px 12px;
       }
-      .seg-row:nth-child(3) {
-        animation-delay: 0.06s;
+      .backup-actions {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
       }
-      .seg-row:nth-child(4) {
-        animation-delay: 0.08s;
+      .backup-btn {
+        flex: 1;
+        font-family: inherit;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        color: var(--green);
+        background: var(--green-glow);
+        border: 1px solid rgba(0, 255, 136, 0.3);
+        padding: 7px 0;
+        cursor: pointer;
+        transition:
+          background 0.1s,
+          border-color 0.1s;
       }
-      .toggle-row:nth-child(1) {
-        animation-delay: 0.02s;
+      .backup-btn:hover {
+        background: rgba(0, 255, 136, 0.18);
+        border-color: var(--green);
       }
-      .toggle-row:nth-child(2) {
-        animation-delay: 0.04s;
+      .backup-reset {
+        width: 100%;
+        margin-top: 8px;
+        color: var(--red);
+        background: var(--red-glow);
+        border-color: rgba(255, 68, 68, 0.35);
+      }
+      .backup-reset:hover {
+        background: rgba(255, 68, 68, 0.18);
+        border-color: var(--red);
+      }
+      .backup-status {
+        font-size: 8px;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+        transition: color 0.2s;
+      }
+      .backup-status.saved {
+        color: var(--green);
+      }
+      .backup-status.err {
+        color: var(--red);
+      }
+
+      /* -- THREAD MANAGER (Unflow) -- */
+      .unflow {
+        padding: 9px 12px 11px;
+      }
+      .unflow-search {
+        width: 100%;
+        font-family: inherit;
+        font-size: 9px;
+        letter-spacing: 0.04em;
+        color: var(--text);
+        background: var(--bg);
+        border: 1px solid var(--border-hi);
+        padding: 6px 8px;
+        outline: none;
+        margin-bottom: 9px;
+      }
+      .unflow-search:focus {
+        border-color: var(--green);
+      }
+      .unflow-search::placeholder {
+        color: var(--muted);
+      }
+      .unflow-group {
+        margin-bottom: 9px;
+      }
+      .unflow-glabel {
+        font-size: 8px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #666;
+        margin-bottom: 4px;
+      }
+      .unflow-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        text-align: left;
+        font-family: inherit;
+        background: none;
+        border: 1px solid transparent;
+        color: var(--text);
+        padding: 5px 6px;
+        cursor: pointer;
+        transition:
+          background 0.1s,
+          border-color 0.1s;
+      }
+      .unflow-row:hover {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: var(--border-hi);
+      }
+      .unflow-name {
+        flex: 1;
+        min-width: 0;
+        font-size: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .unflow-chips {
+        display: flex;
+        gap: 3px;
+        flex-shrink: 0;
+      }
+      .unflow-chip {
+        font-size: 7px;
+        letter-spacing: 0.04em;
+        color: var(--green);
+        background: var(--green-glow);
+        border: 1px solid rgba(0, 255, 136, 0.25);
+        border-radius: 8px;
+        padding: 1px 5px;
+        cursor: pointer;
+      }
+      .unflow-chip:hover {
+        filter: brightness(0.92);
+      }
+      .unflow-chip:hover::after {
+        content: '\00d7';
+        margin-left: 3px;
+        font-weight: 700;
+      }
+      .unflow-empty {
+        font-size: 8px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+      }
+
+      /* -- SECTION HELP (monochrome info dot + popover that unfolds from it) -- */
+      .help-anchor {
+        position: relative;
+        display: inline-flex;
+        flex-shrink: 0;
+      }
+      .help-btn {
+        width: 14px;
+        height: 14px;
+        padding: 0;
+        border-radius: 50%;
+        border: 1px solid var(--border-hi);
+        background: transparent;
+        color: var(--muted);
+        font-family: inherit;
+        font-size: 9px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          color 0.12s,
+          border-color 0.12s,
+          background 0.12s;
+      }
+      .help-btn:hover,
+      .help-btn[aria-expanded='true'] {
+        color: var(--text);
+        border-color: var(--muted);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .help-pop {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        z-index: 50;
+        width: 222px;
+        padding: 10px 11px;
+        background: var(--surface);
+        border: 1px solid var(--border-hi);
+        border-radius: 8px;
+        box-shadow:
+          0 10px 26px rgba(0, 0, 0, 0.55),
+          0 0 0 1px var(--green-glow);
+        transform-origin: top right;
+        transform: scale(0.9) translateY(-4px);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          transform 0.14s ease,
+          opacity 0.14s ease;
+        text-transform: none;
+        letter-spacing: normal;
+      }
+      .help-pop.open {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .help-pop-title {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--green);
+        margin-bottom: 6px;
+      }
+      .help-pop p {
+        font-size: 9px;
+        line-height: 1.5;
+        color: var(--text);
+        margin: 0 0 6px;
+      }
+      .help-pop p:last-child {
+        margin-bottom: 0;
+      }
+      .help-pop .hp-off {
+        color: var(--red);
+        font-weight: 700;
+      }
+      .help-pop .hp-blur {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .help-pop .hp-hide {
+        color: var(--amber);
+        font-weight: 700;
       }
     </style>
   </head>
   <body>
     <div class="header">
-      <div class="logo">&#x1F6E1;</div>
+      <!-- The real extension icon, so the panel header matches the toolbar/store
+           icon. Vite resolves this at build time and emits it to the dist root. -->
+      <img class="logo" src="icons/icon128.png" alt="Shroudly icon" width="26" height="26" />
       <div class="hinfo">
-        <div class="htitle">Blurry GChat</div>
+        <div class="htitle">Shroudly</div>
         <div class="hsub">operator panel v1.0</div>
       </div>
       <div class="dot" id="global-dot"></div>
-    </div>
-
-    <!-- SIDEBAR LIST -->
-    <div class="section">
-      <div class="sec-label">// sidebar list</div>
-
-      <div class="seg-row">
-        <span class="row-icon">&#x1F3F7;</span>
-        <div class="row-info">
-          <div class="row-label">Names</div>
-          <div class="row-desc">Conversation &amp; contact names</div>
-        </div>
-        <div class="seg-group" id="namesMode">
-          <button class="seg" data-val="off">OFF</button>
-          <button class="seg" data-val="blur">BLUR</button>
-          <button class="seg" data-val="hide">HIDE</button>
-        </div>
-      </div>
-
-      <div class="seg-row">
-        <span class="row-icon">&#x1F4CB;</span>
-        <div class="row-info">
-          <div class="row-label">Msg Preview</div>
-          <div class="row-desc">Last message preview text</div>
-        </div>
-        <div class="seg-group" id="previewMode">
-          <button class="seg" data-val="off">OFF</button>
-          <button class="seg" data-val="blur">BLUR</button>
-          <button class="seg" data-val="hide">HIDE</button>
-        </div>
-      </div>
-
-      <div class="seg-row">
-        <span class="row-icon">&#x1F464;</span>
-        <div class="row-info">
-          <div class="row-label">Avatars</div>
-          <div class="row-desc">Profile pictures &amp; initials</div>
-        </div>
-        <div class="seg-group" id="avatarsMode">
-          <button class="seg" data-val="off">OFF</button>
-          <button class="seg" data-val="blur">BLUR</button>
-          <button class="seg" data-val="hide">HIDE</button>
-        </div>
-      </div>
-
-      <label class="toggle-row" id="row-hoverReveal" for="hoverReveal">
-        <span class="row-icon">&#x1F441;</span>
-        <div class="row-info">
-          <div class="row-label">Hover Reveal</div>
-          <div class="row-desc">Reveal blurred content on hover</div>
-        </div>
-        <div class="switch">
-          <input type="checkbox" id="hoverReveal" />
+      <label class="master" for="master-toggle" title="Enable / disable Shroudly">
+        <span class="master-label" id="master-label">ON</span>
+        <span class="switch">
+          <input type="checkbox" id="master-toggle" checked />
           <span class="track"></span>
-        </div>
+        </span>
       </label>
     </div>
 
-    <!-- CHAT CONTENT -->
-    <div class="section">
-      <div class="sec-label">// chat content</div>
-
-      <div class="seg-row">
-        <span class="row-icon">&#x1F3F7;</span>
-        <div class="row-info">
-          <div class="row-label">Names</div>
-          <div class="row-desc">Sender names in open chat</div>
+    <div id="panel-sections">
+      <!-- PRIVACY SHIELD: all original controls, now collapsible + draggable -->
+      <div class="panel-section" data-section-id="privacy">
+        <div class="psec-head" draggable="true">
+          <span class="psec-drag" aria-hidden="true">&#x283F;</span>
+          <span class="psec-title">Privacy Shield</span>
+          <span class="psec-chevron" aria-hidden="true">&#x25BE;</span>
         </div>
-        <div class="seg-group" id="chatNamesMode">
-          <button class="seg" data-val="off">OFF</button>
-          <button class="seg" data-val="blur">BLUR</button>
-          <button class="seg" data-val="hide">HIDE</button>
+        <div class="psec-body">
+          <!-- SIDEBAR LIST -->
+          <div class="section">
+            <div class="sec-label">
+              <span class="sec-label-text">// sidebar list</span>
+              <span class="help-anchor">
+                <button
+                  class="help-btn"
+                  type="button"
+                  aria-expanded="false"
+                  aria-label="How to use: Sidebar list"
+                >
+                  ?
+                </button>
+                <div class="help-pop" role="dialog" aria-label="Sidebar list help">
+                  <div class="help-pop-title">Sidebar list</div>
+                  <p>
+                    Privacy for the conversation list on the left rail. Set Names, message Preview,
+                    and Avatars to
+                    <span class="hp-off">OFF</span> (visible),
+                    <span class="hp-blur">BLUR</span> (obscured), or
+                    <span class="hp-hide">HIDE</span> (removed).
+                  </p>
+                  <p>
+                    <strong>Hover Reveal</strong> temporarily un-blurs an item while your cursor
+                    rests on it.
+                  </p>
+                </div>
+              </span>
+            </div>
+
+            <div class="seg-row">
+              <span class="row-icon">&#x1F3F7;</span>
+              <div class="row-info">
+                <div class="row-label">Names</div>
+                <div class="row-desc">Conversation &amp; contact names</div>
+              </div>
+              <div class="seg-group" id="namesMode">
+                <button class="seg" data-val="off">OFF</button>
+                <button class="seg" data-val="blur">BLUR</button>
+                <button class="seg" data-val="hide">HIDE</button>
+              </div>
+            </div>
+
+            <div class="seg-row">
+              <span class="row-icon">&#x1F4CB;</span>
+              <div class="row-info">
+                <div class="row-label">Msg Preview</div>
+                <div class="row-desc">Last message preview text</div>
+              </div>
+              <div class="seg-group" id="previewMode">
+                <button class="seg" data-val="off">OFF</button>
+                <button class="seg" data-val="blur">BLUR</button>
+                <button class="seg" data-val="hide">HIDE</button>
+              </div>
+            </div>
+
+            <div class="seg-row">
+              <span class="row-icon">&#x1F464;</span>
+              <div class="row-info">
+                <div class="row-label">Avatars</div>
+                <div class="row-desc">Profile pictures &amp; initials</div>
+              </div>
+              <div class="seg-group" id="avatarsMode">
+                <button class="seg" data-val="off">OFF</button>
+                <button class="seg" data-val="blur">BLUR</button>
+                <button class="seg" data-val="hide">HIDE</button>
+              </div>
+            </div>
+
+            <label class="toggle-row" id="row-hoverReveal" for="hoverReveal">
+              <span class="row-icon">&#x1F441;</span>
+              <div class="row-info">
+                <div class="row-label">Hover Reveal</div>
+                <div class="row-desc">Reveal blurred content on hover</div>
+              </div>
+              <div class="switch">
+                <input type="checkbox" id="hoverReveal" />
+                <span class="track"></span>
+              </div>
+            </label>
+          </div>
+
+          <!-- CHAT CONTENT -->
+          <div class="section">
+            <div class="sec-label">
+              <span class="sec-label-text">// chat content</span>
+              <span class="help-anchor">
+                <button
+                  class="help-btn"
+                  type="button"
+                  aria-expanded="false"
+                  aria-label="How to use: Chat content"
+                >
+                  ?
+                </button>
+                <div class="help-pop" role="dialog" aria-label="Chat content help">
+                  <div class="help-pop-title">Chat content</div>
+                  <p>
+                    Privacy inside the open conversation. Independently
+                    <span class="hp-blur">BLUR</span> or <span class="hp-hide">HIDE</span> sender
+                    Names, Message text, and Avatars so an active thread stays protected on screen.
+                  </p>
+                </div>
+              </span>
+            </div>
+
+            <div class="seg-row">
+              <span class="row-icon">&#x1F3F7;</span>
+              <div class="row-info">
+                <div class="row-label">Names</div>
+                <div class="row-desc">Sender names in open chat</div>
+              </div>
+              <div class="seg-group" id="chatNamesMode">
+                <button class="seg" data-val="off">OFF</button>
+                <button class="seg" data-val="blur">BLUR</button>
+                <button class="seg" data-val="hide">HIDE</button>
+              </div>
+            </div>
+
+            <div class="seg-row">
+              <span class="row-icon">&#x1F4AC;</span>
+              <div class="row-info">
+                <div class="row-label">Messages</div>
+                <div class="row-desc">Message content in open chat</div>
+              </div>
+              <div class="seg-group" id="chatMode">
+                <button class="seg" data-val="off">OFF</button>
+                <button class="seg" data-val="blur">BLUR</button>
+                <button class="seg" data-val="hide">HIDE</button>
+              </div>
+            </div>
+
+            <div class="seg-row">
+              <span class="row-icon">&#x1F464;</span>
+              <div class="row-info">
+                <div class="row-label">Avatars</div>
+                <div class="row-desc">Photos in open chat</div>
+              </div>
+              <div class="seg-group" id="chatAvatarsMode">
+                <button class="seg" data-val="off">OFF</button>
+                <button class="seg" data-val="blur">BLUR</button>
+                <button class="seg" data-val="hide">HIDE</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- INTENSITY -->
+          <div class="section">
+            <div class="sec-label">
+              <span class="sec-label-text">// intensity</span>
+              <span class="help-anchor">
+                <button
+                  class="help-btn"
+                  type="button"
+                  aria-expanded="false"
+                  aria-label="How to use: Intensity"
+                >
+                  ?
+                </button>
+                <div class="help-pop" role="dialog" aria-label="Intensity help">
+                  <div class="help-pop-title">Intensity</div>
+                  <p>
+                    Tune how the blur looks. <strong>Blur Strength</strong> sets how heavy the blur
+                    is; <strong>Opacity</strong> sets how faded blurred elements appear.
+                  </p>
+                  <p>These apply everywhere blur is active.</p>
+                </div>
+              </span>
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <div class="slider-label"><span>&#x1F4A7;</span> Blur Strength</div>
+                <div class="slider-val" id="blurVal">3px</div>
+              </div>
+              <input type="range" id="blurIntensity" min="1" max="14" step="1" value="3" />
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <div class="slider-label"><span>&#x1F32B;</span> Opacity</div>
+                <div class="slider-val" id="opacityVal">55%</div>
+              </div>
+              <input type="range" id="opacity" min="10" max="90" step="5" value="55" />
+            </div>
+          </div>
+
+          <!-- DANGER -->
+          <div class="section">
+            <div class="sec-label">
+              <span class="sec-label-text">// danger</span>
+              <span class="help-anchor">
+                <button
+                  class="help-btn"
+                  type="button"
+                  aria-expanded="false"
+                  aria-label="How to use: Danger"
+                >
+                  ?
+                </button>
+                <div class="help-pop" role="dialog" aria-label="Danger help">
+                  <div class="help-pop-title">Danger</div>
+                  <p>
+                    High-impact safeguards. <strong>Screen Share Guard</strong> auto-applies full
+                    blur the moment Chrome detects tab capture.
+                  </p>
+                  <p>
+                    <strong>Panic Mode</strong> instantly blurs the whole window &mdash; toggle it
+                    with the hotkey below.
+                  </p>
+                </div>
+              </span>
+            </div>
+
+            <label class="toggle-row" id="row-autoShareProtect" for="autoShareProtect">
+              <span class="row-icon">&#x1F4E1;</span>
+              <div class="row-info">
+                <div class="row-label">Screen Share Guard</div>
+                <div class="row-desc">Auto full-blur when tab is captured</div>
+              </div>
+              <div class="switch">
+                <input type="checkbox" id="autoShareProtect" />
+                <span class="track"></span>
+              </div>
+            </label>
+
+            <label class="toggle-row danger" id="row-panic" for="panic">
+              <span class="row-icon">&#x1F631;</span>
+              <div class="row-info">
+                <div class="row-label">Panic Mode</div>
+                <div class="row-desc">Blur everything instantly &middot; &#x2318;&#x21E7;P</div>
+              </div>
+              <div class="switch danger-sw">
+                <input type="checkbox" id="panic" />
+                <span class="track"></span>
+              </div>
+            </label>
+          </div>
+
+          <!-- HOTKEYS -->
+          <div class="section">
+            <div class="sec-label">
+              <span class="sec-label-text">// hotkeys</span>
+              <span class="help-anchor">
+                <button
+                  class="help-btn"
+                  type="button"
+                  aria-expanded="false"
+                  aria-label="How to use: Hotkeys"
+                >
+                  ?
+                </button>
+                <div class="help-pop" role="dialog" aria-label="Hotkeys help">
+                  <div class="help-pop-title">Hotkeys</div>
+                  <p>
+                    Shortcuts work while Google Chat is focused. Use Cmd (macOS) or Ctrl
+                    (Windows/Linux) together with Shift.
+                  </p>
+                  <p>
+                    Cycle Names steps <span class="hp-off">OFF</span> &rarr;
+                    <span class="hp-blur">BLUR</span> &rarr; <span class="hp-hide">HIDE</span>;
+                    Panic toggles full-window blur.
+                  </p>
+                </div>
+              </span>
+            </div>
+            <div class="hotkeys">
+              <div class="hk-row">
+                <span class="hk-label">Cycle Names Mode</span>
+                <div class="hk-keys">
+                  <kbd>&#x2318;</kbd><span class="sep">+</span><kbd>&#x21E7;</kbd
+                  ><span class="sep">+</span><kbd>L</kbd>
+                </div>
+              </div>
+              <div class="hk-row">
+                <span class="hk-label">Panic Mode</span>
+                <div class="hk-keys">
+                  <kbd>&#x2318;</kbd><span class="sep">+</span><kbd>&#x21E7;</kbd
+                  ><span class="sep">+</span><kbd>P</kbd>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.psec-body -->
         </div>
       </div>
+      <!-- /.panel-section[privacy] -->
 
-      <div class="seg-row">
-        <span class="row-icon">&#x1F4AC;</span>
-        <div class="row-info">
-          <div class="row-label">Messages</div>
-          <div class="row-desc">Message content in open chat</div>
+      <!-- THREAD MANAGER (Unflow): placeholder; populated in Phase 8 -->
+      <div class="panel-section" data-section-id="unflow">
+        <div class="psec-head" draggable="true">
+          <span class="psec-drag" aria-hidden="true">&#x283F;</span>
+          <span class="psec-title">Thread Manager</span>
+          <span class="help-anchor">
+            <button
+              class="help-btn"
+              type="button"
+              aria-expanded="false"
+              aria-label="How to use: Thread Manager"
+            >
+              ?
+            </button>
+            <div class="help-pop" role="dialog" aria-label="Thread Manager help">
+              <div class="help-pop-title">Thread Manager</div>
+              <p>
+                Organize conversations with aliases, pins, and tags, then find them fast with
+                search. Pin a thread to float it to the top.
+              </p>
+              <p>Items appear here in the panel and inline on the Google Chat page.</p>
+            </div>
+          </span>
+          <span class="psec-chevron" aria-hidden="true">&#x25BE;</span>
         </div>
-        <div class="seg-group" id="chatMode">
-          <button class="seg" data-val="off">OFF</button>
-          <button class="seg" data-val="blur">BLUR</button>
-          <button class="seg" data-val="hide">HIDE</button>
-        </div>
-      </div>
-
-      <div class="seg-row">
-        <span class="row-icon">&#x1F464;</span>
-        <div class="row-info">
-          <div class="row-label">Avatars</div>
-          <div class="row-desc">Photos in open chat</div>
-        </div>
-        <div class="seg-group" id="chatAvatarsMode">
-          <button class="seg" data-val="off">OFF</button>
-          <button class="seg" data-val="blur">BLUR</button>
-          <button class="seg" data-val="hide">HIDE</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- INTENSITY -->
-    <div class="section">
-      <div class="sec-label">// intensity</div>
-      <div class="slider-row">
-        <div class="slider-header">
-          <div class="slider-label"><span>&#x1F4A7;</span> Blur Strength</div>
-          <div class="slider-val" id="blurVal">3px</div>
-        </div>
-        <input type="range" id="blurIntensity" min="1" max="14" step="1" value="3" />
-      </div>
-      <div class="slider-row">
-        <div class="slider-header">
-          <div class="slider-label"><span>&#x1F32B;</span> Opacity</div>
-          <div class="slider-val" id="opacityVal">55%</div>
-        </div>
-        <input type="range" id="opacity" min="10" max="90" step="5" value="55" />
-      </div>
-    </div>
-
-    <!-- LAYOUT -->
-    <div class="section">
-      <div class="sec-label">// layout</div>
-      <label class="toggle-row" id="row-sidebar" for="sidebar">
-        <span class="row-icon">&#x25C0;</span>
-        <div class="row-info">
-          <div class="row-label">Auto Collapse Sidebar</div>
-          <div class="row-desc">Shrink nav &middot; expand on hover</div>
-        </div>
-        <div class="switch">
-          <input type="checkbox" id="sidebar" />
-          <span class="track"></span>
-        </div>
-      </label>
-      <label class="toggle-row" id="row-focusMode" for="focusMode">
-        <span class="row-icon">&#x1F3AF;</span>
-        <div class="row-info">
-          <div class="row-label">Focus Mode</div>
-          <div class="row-desc">Dim sidebar &middot; reveal on hover</div>
-        </div>
-        <div class="switch">
-          <input type="checkbox" id="focusMode" />
-          <span class="track"></span>
-        </div>
-      </label>
-    </div>
-
-    <!-- DANGER -->
-    <div class="section">
-      <div class="sec-label">// danger</div>
-
-      <label class="toggle-row" id="row-autoShareProtect" for="autoShareProtect">
-        <span class="row-icon">&#x1F4E1;</span>
-        <div class="row-info">
-          <div class="row-label">Screen Share Guard</div>
-          <div class="row-desc">Auto full-blur when tab is captured</div>
-        </div>
-        <div class="switch">
-          <input type="checkbox" id="autoShareProtect" />
-          <span class="track"></span>
-        </div>
-      </label>
-
-      <label class="toggle-row danger" id="row-panic" for="panic">
-        <span class="row-icon">&#x1F631;</span>
-        <div class="row-info">
-          <div class="row-label">Panic Mode</div>
-          <div class="row-desc">Blur everything instantly &middot; &#x2318;&#x21E7;P</div>
-        </div>
-        <div class="switch danger-sw">
-          <input type="checkbox" id="panic" />
-          <span class="track"></span>
-        </div>
-      </label>
-    </div>
-
-    <!-- HOTKEYS -->
-    <div class="section">
-      <div class="sec-label">// hotkeys</div>
-      <div class="hotkeys">
-        <div class="hk-row">
-          <span class="hk-label">Cycle Names Mode</span>
-          <div class="hk-keys">
-            <kbd>&#x2318;</kbd><span class="sep">+</span><kbd>&#x21E7;</kbd
-            ><span class="sep">+</span><kbd>L</kbd>
+        <div class="psec-body">
+          <div class="unflow">
+            <input
+              id="unflow-search"
+              class="unflow-search"
+              type="text"
+              placeholder="search alias or #tag"
+              aria-label="Search threads"
+            />
+            <div id="unflow-lists" class="unflow-lists"></div>
+            <div id="unflow-empty" class="unflow-empty">// no saved threads yet</div>
           </div>
         </div>
-        <div class="hk-row">
-          <span class="hk-label">Panic Mode</span>
-          <div class="hk-keys">
-            <kbd>&#x2318;</kbd><span class="sep">+</span><kbd>&#x21E7;</kbd
-            ><span class="sep">+</span><kbd>P</kbd>
-          </div>
+      </div>
+      <!-- /.panel-section[unflow] -->
+
+      <!-- BACKUP: export / import all state as JSON -->
+      <div class="panel-section" data-section-id="backup">
+        <div class="psec-head" draggable="true">
+          <span class="psec-drag" aria-hidden="true">&#x283F;</span>
+          <span class="psec-title">Backup</span>
+          <span class="help-anchor">
+            <button
+              class="help-btn"
+              type="button"
+              aria-expanded="false"
+              aria-label="How to use: Backup"
+            >
+              ?
+            </button>
+            <div class="help-pop" role="dialog" aria-label="Backup help">
+              <div class="help-pop-title">Backup</div>
+              <p>
+                <strong>Export</strong> downloads a JSON file with all your settings, section
+                layout, and saved threads (aliases, pins, tags).
+              </p>
+              <p>
+                <strong>Import</strong> restores that file on another machine or browser. It
+                overwrites current data, so you will be asked to confirm.
+              </p>
+            </div>
+          </span>
+          <span class="psec-chevron" aria-hidden="true">&#x25BE;</span>
         </div>
-        <div class="hk-row">
-          <span class="hk-label">Focus Mode</span>
-          <div class="hk-keys">
-            <kbd>&#x2318;</kbd><span class="sep">+</span><kbd>&#x21E7;</kbd
-            ><span class="sep">+</span><kbd>F</kbd>
+        <div class="psec-body">
+          <div class="backup">
+            <div class="backup-actions">
+              <button id="backup-export" class="backup-btn" type="button">EXPORT</button>
+              <button id="backup-import" class="backup-btn" type="button">IMPORT</button>
+            </div>
+            <input
+              id="backup-file"
+              class="backup-file"
+              type="file"
+              accept="application/json"
+              hidden
+            />
+            <button id="backup-reset" class="backup-btn backup-reset" type="button">
+              CLEAR ALL DATA
+            </button>
+            <div id="backup-status" class="backup-status">ready</div>
           </div>
         </div>
       </div>
+      <!-- /.panel-section[backup] -->
     </div>
+    <!-- /#panel-sections -->
 
     <div class="footer">
-      <span class="fver">v1.0.0</span>
+      <span class="fver">v1.1.0</span>
       <span class="fstatus" id="save-status">ready</span>
+    </div>
+
+    <!-- Confirm modal for clearing all data -->
+    <div class="modal-overlay" id="reset-modal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reset-title">
+        <div class="modal-title" id="reset-title">Clear all data?</div>
+        <p class="modal-text">
+          This permanently removes all settings, the section layout, and every saved thread
+          (aliases, pins, tags), restoring factory defaults. This cannot be undone.
+        </p>
+        <div class="modal-actions">
+          <button class="modal-btn modal-cancel" id="reset-cancel" type="button">CANCEL</button>
+          <button class="modal-btn modal-confirm" id="reset-ok" type="button">CLEAR ALL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm modal for disabling the whole extension -->
+    <div class="modal-overlay" id="confirm-modal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+        <div class="modal-title" id="confirm-title">Disable Shroudly?</div>
+        <p class="modal-text">
+          All blurring and Thread Manager decorations will stop until you turn it back on. Your
+          saved settings and threads are kept.
+        </p>
+        <div class="modal-actions">
+          <button class="modal-btn modal-cancel" id="confirm-cancel" type="button">CANCEL</button>
+          <button class="modal-btn modal-confirm" id="confirm-ok" type="button">DISABLE</button>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="src/popup.ts"></script>
